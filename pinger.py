@@ -52,7 +52,6 @@ def address_formatting(address):
 
 
 def how_many_pings(pings_number):
-<<<<<<< HEAD
     if pings_number[0].isdigit():
         if pings_number.isdigit():
             pings_number = int(pings_number)
@@ -60,20 +59,6 @@ def how_many_pings(pings_number):
             pings_number = 4
     else:
         messagebox.showerror('Ошибка', 'В вводе количества запросов есть буквы, или другие символы!')
-=======
-    if not pings_number:
-        pings_number = 4
-    else:
-        if pings_number[0].isdigit():
-            if pings_number.isdigit():
-                pings_number = int(pings_number)
-            elif pings_number >= 800:
-                pings_number = 4
-            else:
-                pings_number = 4
-        else:
-            messagebox.showerror('Ошибка', 'В вводе количества запросов есть буквы, или другие символы!')
->>>>>>> 3f2a5e167ba777ddb01dfda47c8301dbfae44269
 
     return pings_number
 
