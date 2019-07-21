@@ -52,15 +52,14 @@ def address_formatting(address):
 
 
 def how_many_pings(pings_number):
-    if pings_number[0].isdigit():
-        if pings_number.isdigit():
+    if pings_number.isdigit():
+        if int(pings_number) < 100:
             pings_number = int(pings_number)
-        elif pings_number >= 800:
-            messagebox.showerror('Ошибка', 'Было введено слишком большое число')
+            return pings_number
+        else:
+            messagebox.showerror('Ошибка', 'Неверно указано количество!')
     else:
         messagebox.showerror('Ошибка', 'В вводе количества запросов есть буквы, или другие символы!')
-
-    return pings_number
 
 
 def get_info_from_ip(address, pings_number):
@@ -95,7 +94,7 @@ def get_info_from_address(address, pings_number):
 def file_save(*args):
     ping_list = args[2]
     
-    filename=fd.asksaveasfilename()
+    filename = fd.asksaveasfilename()
     f=open(filename + '.txt', 'w')
 
     if args[0] is None:
