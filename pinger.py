@@ -30,10 +30,10 @@ def open_info_window():
     y = (window.winfo_screenheight() - window.winfo_reqheight()) / 2 - 100
     window.wm_geometry("+%d+%d" % (x, y))
     window.configure(bg='#89b0f0')
-    Label(window, text='Как пользоваться', anchor='center', font='Arial 14', fg='black', bg='#89b0f0').pack()
+    Label(window, text='Как пользоваться программой', anchor='center', font='Arial 14', fg='black', bg='#89b0f0').pack()
     Label(window, text=texts['instructions1'], font='Arial, 12', fg='black', bg='#89b0f0').pack()
     Label(window, text=texts['instructions2'], font='Arial, 12', fg='black', bg='#89b0f0').pack()
-    Label(window, text='\n\n\nЕсли вы будете делать что-то не то,\nто будете получать ошибки)', font='Arial 11', fg='black', bg='#89b0f0').pack()
+    Label(window, text=texts['info_errors'], font='Arial 11', fg='black', bg='#89b0f0').pack()
     Label(window, text='Pinger made by FourtyK', font='Arial, 16', fg='black', bg='#89b0f0').pack(side='bottom')
 
 
@@ -56,7 +56,7 @@ def how_many_pings(pings_number):
         if pings_number.isdigit():
             pings_number = int(pings_number)
         elif pings_number >= 800:
-            pings_number = 4
+            messagebox.showerror('Ошибка', 'Было введено слишком большое число')
     else:
         messagebox.showerror('Ошибка', 'В вводе количества запросов есть буквы, или другие символы!')
 
@@ -94,10 +94,10 @@ def get_info_from_address(address, pings_number):
 
 def file_save(*args):
     ping_list = args[2]
-    file_name = fd.asksaveasfilename(filetypes=(("TXT files", "*.txt"),
-                                                ("HTML files", "*.html; *.htm"),
-                                                ("All files", "*.*")))
-    f = open(file_name, 'w')
+    
+    filename=fd.asksaveasfilename()
+    f=open(filename + '.txt', 'w')
+
     if args[0] is None:
         average_ping = args[1]
         f.write(f"Средний пинг: {average_ping}\n")
