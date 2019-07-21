@@ -7,6 +7,7 @@ from tkinter import messagebox
 from tkinter import filedialog as fd
 from tkinter import ttk
 # ИМПОРТ НУЖНЫХ РАЗДЕЛОВ TKINTER
+import json
 
 
 def mean(numbers):  # ФУНКИЦИЯ НА ПОДСЧЁТ СРЕДНЕГО ЧИСЛА
@@ -19,6 +20,9 @@ def on_closing():
 
 
 def open_info_window():
+    with open('texts.json', 'r', encoding='UTF-8') as file:
+        texts = json.load(file)
+
     window = Tk()
     window.title('Справка')
     window.geometry('400x400')
@@ -27,17 +31,43 @@ def open_info_window():
     window.wm_geometry("+%d+%d" % (x, y))
     window.configure(bg='#89b0f0')
     Label(window, text='Как пользоваться', anchor='center', font='Arial 14', fg='black', bg='#89b0f0').pack()
-    Label(window, text='\nЧто можно вписывать в адресную строку\n1) IP-адрес\n2) Адрес формата site.com\n3) Адрес формата http://site.com', font='Arial, 12', fg='black', bg='#89b0f0').pack()
-    Label(window, text='\nСтрока ввода количества запросов\n1) Вводить нужно числа\n2) Если оставить поле пустым,\nто всего пройдёт 4 запроса\n3) Если вписать разные буквы и символы,\nто запроса все равно пройдёт 4', font='Arial, 12', fg='black', bg='#89b0f0').pack()
+    Label(window, text=texts['instructions1'], font='Arial, 12', fg='black', bg='#89b0f0').pack()
+    Label(window, text=texts['instructions2'], font='Arial, 12', fg='black', bg='#89b0f0').pack()
     Label(window, text='\n\n\nЕсли вы будете делать что-то не то,\nто будете получать ошибки)', font='Arial 11', fg='black', bg='#89b0f0').pack()
     Label(window, text='Pinger made by FourtyK', font='Arial, 16', fg='black', bg='#89b0f0').pack(side='bottom')
+
+
+def address_formatting(address):
+    if not address.startswith('http'):
+        response = requests.get(f'https://{address}')
+    else:
+        response = requests.get(address)
+
+    if address.startswith('http://'):
+        address = address[7:]
+    elif address.startswith('https://'):
+        address = address[8:]
+
+    return (address, response)
+
+
+def how_many_pings(pings_number):
+    if pings_number[0].isdigit():
+        if pings_number.isdigit():
+            pings_number = int(pings_number)
+        elif pings_number >= 800:
+            pings_number = 4
+    else:
+        messagebox.showerror('Ошибка', 'В вводе количества запросов есть буквы, или другие символы!')
+
+    return pings_number
 
 
 def get_info_from_ip(address, pings_number):
     ping_list = []
 
     for _ in range(int(pings_number)):
-        res = ping(address, size=10)
+        res = ping(address, size=10, count=1)
         ping_list.append(res.rtt_avg_ms)
 
     average_ping = round(mean(ping_list), 1)  # ПОИСК СРЕДНЕГО ПИНГА
@@ -49,18 +79,11 @@ def get_info_from_ip(address, pings_number):
 def get_info_from_address(address, pings_number):
     ping_list = []
 
-    if not address.startswith('http'):
-        response = requests.get(f'https://{address}')
-    else:
-        response = requests.get(address)
-        
-    if address.startswith('http://'):
-        address = address[7:]
-    elif address.startswith('https://'):
-        address = address[8:]
+    address_info = address_formatting(address)
+    address, response = address_info
 
     for _ in range(int(pings_number)):
-        res = ping(address, size=10)
+        res = ping(address, size=10, count=1)
         ping_list.append(res.rtt_avg_ms)
 
     average_ping = round(mean(ping_list), 1)  # ПОИСК СРЕДНЕГО ПИНГА
@@ -89,15 +112,7 @@ def check(*args):
     pings_number = pings.get()  # ПОЛУЧЕНИЕ КОЛ-ВА ПИНГОВ
     address = address_edit.get()  # ПОЛУЧЕНИЕ АДРЕСА
 
-    if pings_number[0].isdigit():
-        if pings_number.isdigit():
-            pings_number = int(pings_number)
-        elif pings_number >= 800:
-            pings_number = 4
-        else:
-            pings_number = 4
-    else:
-        messagebox.showerror('Ошибка', 'В вводе количества запросов есть буквы, или другие символы!')
+    pings_number = how_many_pings(pings_number)
 
     try:
         if address[0].isalpha():
@@ -109,7 +124,7 @@ def check(*args):
 
         elif address[0].isdigit():
             info = get_info_from_ip(address, pings_number)
-            average_ping, ping_list= info[0], info[1]
+            average_ping, ping_list = info[0], info[1]
             answer = messagebox.askyesno(title="Вопрос", message=f"Сохранить данные?\n\nСредний пинг: {average_ping}")
             if answer is True:
                 file_save(None, average_ping, ping_list)
@@ -136,12 +151,14 @@ Label(root, text="Что пингуем?", font='Arial 12', fg='black', bg='#f0c
 
 address_edit = ttk.Entry(root, width=40)
 address_edit.bind('<Return>', check)
+address_edit.insert(0, 'example.com')
 address_edit.pack()
 
 Label(root, text="\nСколько запросов отправляем?", font='Arial 12', fg='black', bg='#f0cd89').pack()
 
 pings = ttk.Entry(root, width=40)
 pings.bind('<Return>', check)
+pings.insert(0, 4)
 pings.pack()
 
 Label(root, text='', bg='#f0cd89').pack()
