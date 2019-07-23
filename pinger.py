@@ -30,10 +30,11 @@ def open_info_window():
     y = (window.winfo_screenheight() - window.winfo_reqheight()) / 2 - 100
     window.wm_geometry("+%d+%d" % (x, y))
     window.configure(bg='#89b0f0')
-    Label(window, text='Как пользоваться программой', anchor='center', font='Arial 14', fg='black', bg='#89b0f0').pack()
-    Label(window, text=texts['instructions1'], font='Arial, 12', fg='black', bg='#89b0f0').pack()
-    Label(window, text=texts['instructions2'], font='Arial, 12', fg='black', bg='#89b0f0').pack()
-    Label(window, text=texts['info_errors'], font='Arial 11', fg='black', bg='#89b0f0').pack()
+    Label(window, text='Как пользоваться программой?', anchor='center', font='Arial 14', fg='black', bg='#89b0f0').pack()
+    Label(window, text=texts['main_instruction'], font='Arial, 13', fg='black', justify='left', bg='#89b0f0').pack()
+    Label(window, text=texts['instructions1'], font='Arial, 12', fg='black', justify='left', bg='#89b0f0').pack()
+    Label(window, text=texts['instructions2'], font='Arial, 12', fg='black', justify='left', bg='#89b0f0').pack()
+    Label(window, text=texts['info_errors'], font='Arial 11', fg='black', justify='left', bg='#89b0f0').pack()
     Label(window, text='Pinger made by FourtyK', font='Arial, 16', fg='black', bg='#89b0f0').pack(side='bottom')
 
 
@@ -53,7 +54,7 @@ def address_formatting(address):
 
 def how_many_pings(pings_number):
     if pings_number.isdigit():
-        if int(pings_number) < 100:
+        if int(pings_number) < 1000:
             pings_number = int(pings_number)
             return pings_number
         else:
@@ -93,7 +94,7 @@ def get_info_from_address(address, pings_number):
 
 def file_save(*args):
     ping_list = args[2]
-    
+
     filename = fd.asksaveasfilename()
     f=open(filename + '.txt', 'w')
 
@@ -107,7 +108,7 @@ def file_save(*args):
     f.close()
 
 
-def check(*args):
+def check():
     pings_number = pings.get()  # ПОЛУЧЕНИЕ КОЛ-ВА ПИНГОВ
     address = address_edit.get()  # ПОЛУЧЕНИЕ АДРЕСА
 
